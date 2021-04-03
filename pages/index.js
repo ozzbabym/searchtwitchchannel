@@ -1,65 +1,83 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import React from 'react'
+import axios from 'axios'
+import styles from '../styles/Home.module.scss'
+import Link from 'next/link'
+import localStorage from 'localStorage'
+
+const options = {
+    headers: {
+        'Accept': 'application/vnd.twitchtv.v5+json',
+        'Client-ID': 'g2p1of5nagftjvs4fm143jr3aau7t5'
+    }
+}
 
 export default function Home() {
+    const [input, setInput] = React.useState( '')
+    const [videos, setVideos] = React.useState('')
+    const [favorites, setFavorites] = React.useState('')
+
+    const getVideos = async () => {
+
+        const user = await axios.get(`https://api.twitch.tv/kraken/users?login=${input}`, options)
+            .then(response => response)
+            .then(data => data.data.users[0]);
+
+        if(user === undefined){
+            alert('ничего не найдено')
+        }else {
+            await axios.get(`https://api.twitch.tv/kraken/channels/${user._id}/videos`, options)
+                .then(response => response)
+                .then(data => setVideos(data.data.videos));
+        }
+    }
+
+
+    const onChangeInput = (e) => {
+        setInput(e.currentTarget.value)
+    }
+
+    const searchChannel = () => {
+        if(input===''){
+            alert('Input empty')
+        }else{
+            getVideos()
+        }
+    }
+
+    const addFavorite = (data) => {
+        setFavorites([...favorites, data ])
+
+    }
+    if(favorites.length>0){
+        localStorage.setItem('favor', JSON.stringify(favorites))
+    }
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+    <div>
+        <div >
+            <div className={styles.search}>
+                <span>Введите название канала</span>
+                <input onChange={onChangeInput} type="text" value={input}/>
+                <button onClick={searchChannel} >Найти</button>
+                <Link href={'/favorites'} data={"Yo"}>Избранное</Link>
+            </div>
         </div>
-      </main>
+        <div>
+            <div className={styles.videos}>
+                {!videos && <div>Ничего не найдено</div>}
+                {videos && videos.map((video, index) =>(
+                    <div key={index}>
+                    <div style={{backgroundImage: `url('${video.preview.medium}')`,backgroundSize: '100%', backgroundRepeat: 'no-repeat', width: '300px', height: '200px' }}>
+                        <div className={styles.containerImage}>
+                            <Link href={video.url}>{video.title}</Link>
+                        </div>
+                        <button onClick={() => addFavorite(video)}>добавить в избранное</button>
+                    </div>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+                    </div>
+                ))}
+            </div>
+        </div>
     </div>
   )
 }

@@ -1,0 +1,128 @@
+.search {
+  height: 40px;
+  background: lightgray;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+      span {
+        color: grey;
+        margin-right: 20px;
+      }
+      input {
+        width: 50%;
+        height: 23px;
+        border: none;
+        border-radius: 3px;
+      }
+      input:hover {
+        border: 10px red;
+
+      }
+
+      button {
+        cursor: pointer;
+        background: white;
+        border: 0px;
+        width: 70px;
+        height: 22px;
+        margin-left: 10px;
+        border-radius: 3px;
+      }
+      button:hover {
+        background: cornflowerblue;
+        transition: all 1s;
+      }
+      button:active {
+        background: darkseagreen;
+        transition: all 0s;
+      }
+      a {
+        margin-left: 10px;
+      }
+}
+
+.videos {
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  column-gap: 10px;
+  row-gap: 10px;
+  button {
+    cursor: pointer;
+    background: lightgrey;
+    border: 0px;
+    width: 280px;
+    height: 22px;
+    margin-left: 10px;
+    border-radius: 3px;
+  }
+  button:hover {
+    background: cornflowerblue;
+    transition: all 1s;
+  }
+  button:active {
+    background: darkseagreen;
+    transition: all 0s;
+  }
+
+}
+
+.containerImage {
+  opacity: 0;
+  height: 85%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 50px 10px;
+  color: lightgray;
+
+
+}
+.containerImage:hover{
+  opacity: 1;
+  background: rgb(0,0,0, 0.5);
+  height: 85%;
+  width: 100%;
+}
+
+@media (max-width: 1344px) {
+  .videos {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media (max-width: 1024px) {
+  .videos {
+    grid-template-columns: 1fr 1fr;
+
+  }
+
+}
+
+@media (max-width: 640px) {
+  .videos {
+    grid-template-columns: 1fr;
+    margin: 50px;
+  }
+  .search {
+    min-width: 410px;
+    span {
+      color: grey;
+      margin-right: 20px;
+      font-size: 8px;
+    }
+  }
+
+}
+
+.header {
+  width: 100%;
+  background: lightgray;
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  text-align: center;
+  align-items: center;
+}
