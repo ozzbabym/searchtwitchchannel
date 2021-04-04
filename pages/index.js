@@ -85,13 +85,12 @@ export default function Home() {
                 {!loading && videos.length===0 && <div>У пользователя нет видео</div>}
                 {videos && videos.map((video, index) =>(
                     <div key={index}>
-                    <div style={{backgroundImage: `url('${video.preview.medium}')`,backgroundSize: '100%', backgroundRepeat: 'no-repeat', width: '300px', height: '200px' }}>
-                        <div className={styles.containerImage}>
-                            <Link href={video.url}><a target="_blank">{video.title}</a></Link>
+                        <div style={{backgroundImage: `url('${video.preview.medium}')`,backgroundSize: '100%', backgroundRepeat: 'no-repeat', width: '300px', height: '200px' }}>
+                            <div className={styles.containerImage}>
+                                <Link href={video.url}><a target="_blank">{video.title}</a></Link>
+                            </div>
+                            <button onClick={() => addFavorite(video)}>добавить в избранное</button>
                         </div>
-                        <button onClick={() => addFavorite(video)}>добавить в избранное</button>
-                    </div>
-
                     </div>
                 ))}
             </div>
