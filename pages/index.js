@@ -3,8 +3,10 @@ import axios from 'axios'
 import styles from '../styles/Home.module.scss'
 import Link from 'next/link'
 import localStorage from 'localStorage'
+const loader = require('../img/loader.gif')
 
-const options = {
+
+const request_options = {
     headers: {
         'Accept': 'application/vnd.twitchtv.v5+json',
         'Client-ID': 'g2p1of5nagftjvs4fm143jr3aau7t5'
@@ -13,22 +15,30 @@ const options = {
 
 export default function Home() {
     const [input, setInput] = React.useState( '')
-    const [videos, setVideos] = React.useState('')
-    const [favorites, setFavorites] = React.useState('')
+    const [videos, setVideos] = React.useState(JSON.parse(localStorage.getItem('videos')) || '')
+    const [favorites, setFavorites] = React.useState(JSON.parse(localStorage.getItem('favor')) ||'')
+    const [loading, setLoadind] = React.useState(false)
 
+    //получить видео
     const getVideos = async () => {
-
-        const user = await axios.get(`https://api.twitch.tv/kraken/users?login=${input}`, options)
+        //получаем юзера по поиску
+        setLoadind(true)
+        setVideos('')
+        const user = await axios.get(`https://api.twitch.tv/kraken/users?login=${input}`, request_options)
             .then(response => response)
             .then(data => data.data.users[0]);
 
         if(user === undefined){
             alert('ничего не найдено')
+            setLoadind(false)
         }else {
-            await axios.get(`https://api.twitch.tv/kraken/channels/${user._id}/videos`, options)
+            //получаем видео у юзера
+            await axios.get(`https://api.twitch.tv/kraken/channels/${user._id}/videos`, request_options)
                 .then(response => response)
                 .then(data => setVideos(data.data.videos));
+            setLoadind(false)
         }
+
     }
 
 
@@ -38,7 +48,7 @@ export default function Home() {
 
     const searchChannel = () => {
         if(input===''){
-            alert('Input empty')
+
         }else{
             getVideos()
         }
@@ -46,11 +56,16 @@ export default function Home() {
 
     const addFavorite = (data) => {
         setFavorites([...favorites, data ])
-
     }
+
     if(favorites.length>0){
         localStorage.setItem('favor', JSON.stringify(favorites))
     }
+
+    React.useEffect(()=>{
+        localStorage.setItem('videos', JSON.stringify(videos))
+    },[videos])
+
 
   return (
     <div>
@@ -63,13 +78,16 @@ export default function Home() {
             </div>
         </div>
         <div>
+            {loading && <div className={styles.loader}>
+                <img src={loader} alt="loader"/>
+            </div>}
             <div className={styles.videos}>
-                {!videos && <div>Ничего не найдено</div>}
+                {!loading && videos.length===0 && <div>У пользователя нет видео</div>}
                 {videos && videos.map((video, index) =>(
                     <div key={index}>
                     <div style={{backgroundImage: `url('${video.preview.medium}')`,backgroundSize: '100%', backgroundRepeat: 'no-repeat', width: '300px', height: '200px' }}>
                         <div className={styles.containerImage}>
-                            <Link href={video.url}>{video.title}</Link>
+                            <Link href={video.url}><a target="_blank">{video.title}</a></Link>
                         </div>
                         <button onClick={() => addFavorite(video)}>добавить в избранное</button>
                     </div>
